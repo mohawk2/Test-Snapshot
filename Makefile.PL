@@ -9,7 +9,7 @@ WriteMakefile(
   VERSION_FROM     => 'lib/Test/Snapshot.pm',
   ABSTRACT_FROM    => 'lib/Test/Snapshot.pm',
   LICENSE          => 'artistic_2',
-  MIN_PERL_VERSION => '5.008001',
+  MIN_PERL_VERSION => '5.008003', # first with right Exporter
   CONFIGURE_REQUIRES => {
     'ExtUtils::MakeMaker' => '7.04',
   },
@@ -21,6 +21,8 @@ WriteMakefile(
   PREREQ_PM => {
     'Test::More' => '0.96', # subtest does done_testing
     'Test2::API' => '0',
+    'Exporter' => '5.57', # exported "import"
+    'File::Path' => '2.07', # make_path
   },
   clean => { FILES => 'Test-Snapshot-*' },
   META_MERGE => {

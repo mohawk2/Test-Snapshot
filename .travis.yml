@@ -1,6 +1,7 @@
 language: perl
 sudo: false
 perl:
+  - "5.8.3"
   - "5.14.0"
   - "5.22.0"
 matrix:
