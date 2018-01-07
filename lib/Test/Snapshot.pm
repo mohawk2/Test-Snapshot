@@ -48,7 +48,7 @@ sub _get_filename {
   # turn the test-file location into its sibling called "snapshots/$basename"
   my ($v, $d, $f) = File::Spec->splitpath(File::Spec->rel2abs($topfile));
   unshift @stack, $f;
-  @stack = map { my $t = $_; $t =~ s#[^a-z]+#_#gi; $t } @stack;
+  @stack = map { my $t = $_; $t =~ s#[^a-z\-0-9]+#_#gi; $t } @stack;
   my $basename = pop @stack;
   File::Spec->catpath(
     $v,
