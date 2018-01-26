@@ -12,7 +12,7 @@ require File::Basename;
 require Data::Dumper;
 use Text::Diff;
 
-our $VERSION = "0.04";
+our $VERSION = "0.05";
 our @EXPORT = qw(is_deeply_snapshot);
 
 sub is_deeply_snapshot {
