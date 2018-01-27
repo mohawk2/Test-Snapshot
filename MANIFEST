@@ -6,5 +6,6 @@ README.md
 t/00-report-prereqs.t
 t/diff.t
 t/snapshot.t
+t/undef.t
 xt/manifest.t
 xt/pod.t

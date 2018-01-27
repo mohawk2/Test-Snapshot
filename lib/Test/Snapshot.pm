@@ -17,7 +17,7 @@ our @EXPORT = qw(is_deeply_snapshot);
 
 sub is_deeply_snapshot {
   my ($got, $description) = @_;
-  my $expected = undef;
+  my $expected = "undef\n";
   my $filename = _get_filename($description);
   if (-f $filename) {
     no strict;
