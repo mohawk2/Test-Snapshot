@@ -4,14 +4,6 @@ use Test::Snapshot;
 use strict;
 use warnings;
 
-sub tempcopy {
-  my ($text, $dir) = @_;
-  my ($tfh, $filename) = tempfile( DIR => $dir );
-  print $tfh $text;
-  close $tfh;
-  $filename;
-}
-
 $ENV{TEST_SNAPSHOT_UPDATE} = 0; # override to ensure known value
 
 my $errdiag;
