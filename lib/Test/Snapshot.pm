@@ -21,7 +21,8 @@ sub is_deeply_snapshot {
   my $filename = _get_filename($description);
   if (-f $filename) {
     no strict;
-    $expected = _read_file($filename);
+    local $@;
+    $expected = eval { _read_file($filename) };
     Test::More::diag("Error in snapshot '$filename': $@") if $@;
   } else {
     Test::More::diag("No snapshot filename '$filename' found");
