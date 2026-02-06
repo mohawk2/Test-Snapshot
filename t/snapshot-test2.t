@@ -1,4 +1,4 @@
-use Test::More 0.96;
+use Test2::V0;
 use Test::Snapshot;
 use File::Temp qw/ tempfile tempdir /;
 use Capture::Tiny qw(capture);
@@ -12,19 +12,19 @@ sub tempcopy {
   $filename;
 }
 
-sub write_file {
-  my ($filename, $data) = @_;
-  open my $fh, '>', $filename or die "$filename: $!";
-  print $fh $data;
-}
-
 $ENV{TEST_SNAPSHOT_UPDATE} = 0; # override to ensure known value
 
 my $dir = tempdir( CLEANUP => 1 );
 my $filename = tempcopy(<<'EOF', $dir);
-use Test::More 0.96;
+use Test2::V0;
 use Test::Snapshot;
+
+subtest 'subtestname' => sub {
+  is_deeply_snapshot 'just some text', 'subtest desc';
+};
+
 is_deeply_snapshot { message => 'output' }, 'desc';
+
 done_testing;
 EOF
 
@@ -38,30 +38,10 @@ sub do_test {
   };
   is $exit, $expect, $description
     or diag 'Output was: ', $out, 'Error was: ', $err;
-  ($out, $err);
 }
 
-do_test($filename, 1, 1, 'fails first time, generate snapshots');
-write_file($filename, <<'EOF');
-use Test::More 0.96;
-use Test::Snapshot;
-is_deeply_snapshot { message => 'different' }, 'desc';
-done_testing;
-EOF
-my ($out, $err) = do_test($filename, 0, 1, 'fails second time, check diffs');
-isnt $out, '';
-$err =~ s#^.* at .* line \d+\.$##m;
-$err =~ s#^Devel::Cover.*$##m;
-is $err, <<'EOF';
-
-# Failed test 'desc'
-
-# @@ -1,3 +1,3 @@
-#  {
-# -  'message' => 'output'
-# +  'message' => 'different'
-#  }
-# Looks like you failed 1 test of 1.
-EOF
+do_test($filename, '', 1, 'fails first time');
+do_test($filename, 1, 1, 'fails second time, snapshots were not created');
+do_test($filename, 1, 0, 'works third time, snapshots were created');
 
 done_testing;

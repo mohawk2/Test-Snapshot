@@ -2,8 +2,7 @@ package Test::Snapshot;
 use 5.008001;
 use strict;
 use warnings;
-require Test::More;
-use Test2::API qw(context);
+use Test2::API qw(context test2_add_callback_pre_subtest);
 use Exporter 'import';
 require Carp;
 require File::Spec;
@@ -15,48 +14,61 @@ use Text::Diff;
 our $VERSION = "0.06";
 our @EXPORT = qw(is_deeply_snapshot);
 
+# capture subtest names
+test2_add_callback_pre_subtest(sub {
+    my ($name, $code, @args) = @_;
+    my $ctx = context();
+    my $hub = $ctx->hub;
+    my @existing = @{$hub->get_meta('Test::Snapshot::subtest_names') // []};
+    push @existing, $name;
+    $hub->set_meta('Test::Snapshot::subtest_names', \@existing);
+    $ctx->release;
+});
+
 sub is_deeply_snapshot {
   my ($got, $description) = @_;
+  my $ctx = context();
   my $expected = "undef\n";
-  my $filename = _get_filename($description);
+  my $filename = _get_filename($ctx, $description);
   if (-f $filename) {
     no strict;
     local $@;
     $expected = eval { _read_file($filename) };
-    Test::More::diag("Error in snapshot '$filename': $@") if $@;
+    $ctx->diag("Error in snapshot '$filename': $@") if $@;
   } else {
-    Test::More::diag("No snapshot filename '$filename' found");
+    $ctx->diag("No snapshot filename '$filename' found");
   }
   my $dumper = Data::Dumper->new([$got]);
   $dumper->Indent(1)->Terse(1);
   $dumper->Sortkeys(1) if $dumper->can("Sortkeys");
   my $dump = $dumper->Dump;
   my $result = $dump eq $expected;
-  local $Test::Builder::Level = $Test::Builder::Level + 1;
   if ($result) {
-    Test::More::pass($description);
+    $ctx->pass($description);
   } else {
-    Test::More::fail($description);
-    Test::More::diag(diff \$expected, \$dump);
+    $ctx->fail($description);
+    $ctx->diag(diff \$expected, \$dump);
     if ($ENV{TEST_SNAPSHOT_UPDATE}) {
       _make_dir_for($filename);
       _write_file($filename, $dump);
     }
   }
+  $ctx->release;
   $result;
 }
 
 sub _get_filename {
-  my ($description) = @_;
+  my ($ctx, $description) = @_;
   Carp::croak("No description given") if !defined $description;
-  my $ctx = context();
-  my ($topfile, @stack) = map $_->get_meta('Test::Builder')->{Name},
-    $ctx->stack->all;
-  $ctx->release;
-  push @stack, $description if defined $description;
-  # turn the test-file location into its sibling called "snapshots/$basename"
+  my @stack;
+  for my $hub ($ctx->stack->all) {
+    my $names = $hub->get_meta('Test::Snapshot::subtest_names');
+    push @stack, @$names if $names;
+  }
+  my $topfile = $0;
   my ($v, $d, $f) = File::Spec->splitpath(File::Spec->rel2abs($topfile));
   unshift @stack, $f;
+  push @stack, $description;
   @stack = map { my $t = $_; $t =~ s#[^a-z\-0-9]+#_#gi; $t } @stack;
   my $basename = pop @stack;
   File::Spec->catpath(

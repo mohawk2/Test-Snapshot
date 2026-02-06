@@ -14,6 +14,7 @@ WriteMakefile(
     'ExtUtils::MakeMaker' => '7.04',
   },
   TEST_REQUIRES => {
+    'Test2::Suite' => '0', # Test2::V0
     'Test::More' => '0.96', # subtest does done_testing
     'Test2::API' => '0',
     'Capture::Tiny' => 0,
@@ -21,7 +22,6 @@ WriteMakefile(
     'Text::Diff' => '0',
   },
   PREREQ_PM => {
-    'Test::More' => '0.96', # subtest does done_testing
     'Test2::API' => '0',
     'Exporter' => '5.57', # exported "import"
     'File::Path' => '2.07', # make_path
