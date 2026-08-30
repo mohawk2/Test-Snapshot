@@ -9,5 +9,3 @@ t/errors.t
 t/snapshot.t
 t/snapshots/errors_t/error
 t/undef.t
-xt/manifest.t
-xt/pod.t

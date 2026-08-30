@@ -1,8 +1,7 @@
-MANIFEST.SKIP
-MANIFEST.bak
-.git\/
-^.gitignore
-^.travis.yml
+MANIFEST\.SKIP
+MANIFEST\.bak
+^\.git
+^\.travis.yml
 blib\/
 MYMETA\..*
 ^Test-Snapshot-\d.*
@@ -10,3 +9,4 @@ MYMETA\..*
 ^Makefile.bak$
 pm_to_blib
 \.swp$
+^xt/
