@@ -1,7 +1,6 @@
 MANIFEST\.SKIP
 MANIFEST\.bak
 ^\.git
-^\.travis.yml
 blib\/
 MYMETA\..*
 ^Test-Snapshot-\d.*
