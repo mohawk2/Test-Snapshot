@@ -130,6 +130,8 @@ Test::Snapshot - test against data stored in automatically-named file
 Not connected with L<Test::Snapshots>, which is based on a similar
 concept but for running executables.
 
+As of 0.061, supports use under L<Test2::V0>.
+
 Implements a function to automate the storing and updating of expected
 test outputs. This is based on the idea known in frontend development
 circles as "snapshot testing", hence the module name.

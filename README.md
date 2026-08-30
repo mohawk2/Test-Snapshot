@@ -28,6 +28,8 @@ Test::Snapshot - test against data stored in automatically-named file
 Not connected with [Test::Snapshots](https://metacpan.org/pod/Test%3A%3ASnapshots), which is based on a similar
 concept but for running executables.
 
+As of 0.061, supports use under [Test2::V0](https://metacpan.org/pod/Test2%3A%3AV0).
+
 Implements a function to automate the storing and updating of expected
 test outputs. This is based on the idea known in frontend development
 circles as "snapshot testing", hence the module name.
