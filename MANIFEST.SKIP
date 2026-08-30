@@ -9,3 +9,4 @@ MYMETA\..*
 pm_to_blib
 \.swp$
 ^xt/
+^cover_db/
