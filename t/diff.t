@@ -51,6 +51,7 @@ EOF
 my ($out, $err) = do_test($filename, 0, 1, 'fails second time, check diffs');
 isnt $out, '';
 $err =~ s#^.* at .* line \d+\.$##m;
+$err =~ s#^Devel::Cover.*$##m;
 is $err, <<'EOF';
 
 #   Failed test 'desc'
