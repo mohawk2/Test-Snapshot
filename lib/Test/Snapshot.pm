@@ -11,18 +11,18 @@ require File::Basename;
 require Data::Dumper;
 use Text::Diff;
 
-our $VERSION = "0.06";
+our $VERSION = "0.061";
 our @EXPORT = qw(is_deeply_snapshot);
 
 # capture subtest names
 test2_add_callback_pre_subtest(sub {
-    my ($name, $code, @args) = @_;
-    my $ctx = context();
-    my $hub = $ctx->hub;
-    my @existing = @{$hub->get_meta('Test::Snapshot::subtest_names') // []};
-    push @existing, $name;
-    $hub->set_meta('Test::Snapshot::subtest_names', \@existing);
-    $ctx->release;
+  my ($name, $code, @args) = @_;
+  my $ctx = context();
+  my $hub = $ctx->hub;
+  my @existing = @{$hub->get_meta('Test::Snapshot::subtest_names') // []};
+  push @existing, $name;
+  $hub->set_meta('Test::Snapshot::subtest_names', \@existing);
+  $ctx->release;
 });
 
 sub is_deeply_snapshot {
