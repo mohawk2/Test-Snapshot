@@ -60,11 +60,8 @@ sub is_deeply_snapshot {
 sub _get_filename {
   my ($ctx, $description) = @_;
   Carp::croak("No description given") if !defined $description;
-  my @stack;
-  for my $hub ($ctx->stack->all) {
-    my $names = $hub->get_meta('Test::Snapshot::subtest_names');
-    push @stack, @$names if $names;
-  }
+  my @stack = map $_->get_meta('Test::Snapshot::subtest_names'), $ctx->stack->all;
+  @stack = map @$_, grep $_, @stack;
   my $topfile = $0;
   my ($v, $d, $f) = File::Spec->splitpath(File::Spec->rel2abs($topfile));
   unshift @stack, $f;
