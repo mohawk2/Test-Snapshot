@@ -14,14 +14,12 @@ use Text::Diff;
 our $VERSION = "0.061";
 our @EXPORT = qw(is_deeply_snapshot);
 
-# capture subtest names
+# capture subtest names: called before the child hub is created, so the
+# current hub is the parent; it records the name of its running child
 test2_add_callback_pre_subtest(sub {
-  my ($name, $code, @args) = @_;
+  my ($name) = @_;
   my $ctx = context();
-  my $hub = $ctx->hub;
-  my @existing = @{$hub->get_meta('Test::Snapshot::subtest_names') // []};
-  push @existing, $name;
-  $hub->set_meta('Test::Snapshot::subtest_names', \@existing);
+  $ctx->hub->set_meta('Test::Snapshot::subtest_name', $name);
   $ctx->release;
 });
 
@@ -60,8 +58,18 @@ sub is_deeply_snapshot {
 sub _get_filename {
   my ($ctx, $description) = @_;
   Carp::croak("No description given") if !defined $description;
-  my @stack = map $_->get_meta('Test::Snapshot::subtest_names'), $ctx->stack->all;
-  @stack = map @$_, grep $_, @stack;
+  # a subtest hub's name is the one Test::Builder stored on it, else the
+  # one recorded on the hub below it by the pre_subtest callback
+  my @hubs = $ctx->stack->all;
+  my @stack;
+  for my $i (1 .. $#hubs) {
+    next unless $hubs[$i]->isa('Test2::Hub::Subtest');
+    my $tb_meta = $hubs[$i]->get_meta('Test::Builder');
+    my $name = $tb_meta ? $tb_meta->{Name} : undef;
+    $name = $hubs[$i - 1]->get_meta('Test::Snapshot::subtest_name')
+      if !defined $name;
+    push @stack, $name if defined $name;
+  }
   my $topfile = $0;
   my ($v, $d, $f) = File::Spec->splitpath(File::Spec->rel2abs($topfile));
   unshift @stack, $f;

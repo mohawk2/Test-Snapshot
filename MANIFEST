@@ -9,4 +9,6 @@ t/errors.t
 t/snapshot-test2.t
 t/snapshot-testmore.t
 t/snapshots/errors_t/error
+t/subtest-names-test2.t
+t/subtest-names-testmore.t
 t/undef.t
